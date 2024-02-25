@@ -1,0 +1,49 @@
+create type dept_t
+/
+
+create type emp_t
+as object(
+    empno char(6),
+    firstName varchar(12),
+    lastName varchar(15),
+    workDept REF dept_t,
+    sex char(1),
+    birthDate date,
+    salary number(8,2)
+    )
+/
+    
+CREATE TYPE dept_t 
+AS OBJECT( 
+    deptNo char(3), 
+    dptname VARCHAR2(36), 
+    mgrNo REF emp_t,
+    admrDept REF dept_t
+) 
+/
+
+create table
+emp_table of emp_t(
+    constraint tblemp_primarykey primary key(empno),
+    constraint tblemp_fname firstName NOT NULL,
+    constraint tblemp_lname lastName NOT NULL,
+    constraint tblemp_check_sex CHECK (sex = 'M' OR sex = 'm' OR sex ='F' OR sex='f')
+)
+/
+
+create table
+dept_table OF dept_t(
+    constraint tbldept_primarykey PRIMARY KEY (deptNo),
+    constraint  tbldept_mgrno_fk
+    foreign key(mgrNo) references emp_table,
+    constraint tbldept_admin_fk foreign key (admrDept) references dept_table,
+    constraint tbldept_deptno deptNo NOT NULL,
+    constraint tbldept_deptname dptname NOT NULL
+)
+/
+
+ALTER table emp_table ADD constraint tblemp_workdeptfk FOREIGN KEY (workDept) references dept_table
+/
+
+insert into dept_table values(dept_t('A00', 'SPIFFY', NULL, NULL))
+/
